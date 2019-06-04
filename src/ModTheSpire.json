@@ -1,0 +1,8 @@
+{
+  "modid": "exacting",
+  "name": "Exacting",
+  "author_list": ["adam.skinner"],
+  "description": "Exacting",
+  "version": "0.1",
+  "dependencies": ["basemod"]
+}
