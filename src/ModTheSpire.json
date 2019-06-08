@@ -1,8 +1,8 @@
 {
   "modid": "exacting",
   "name": "Exacting",
-  "author_list": ["adam.skinner"],
-  "description": "Exacting",
-  "version": "0.1",
+  "author_list": ["Adam Skinner"],
+  "description": "Exacting adds an element of precision and reward. \n\nBlocking an enemey's attack exactly will debuff your opponent.  \n\nReducing an opponent to exactly zero hp will yield a reward. \n\nInspired by the mechanics of NEOVERSE.",
+  "version": "0.1.0",
   "dependencies": ["basemod"]
 }
