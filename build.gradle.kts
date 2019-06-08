@@ -50,7 +50,7 @@ tasks.register<Jar>("jar1") {
     from(file("src/ModTheSpire.json"))
 }
 
-tasks.register<Copy>("copyJarToMods") {
+tasks.register<Copy>("copyJarToStsMods") {
     dependsOn("clean")
     dependsOn("jar1")
 
