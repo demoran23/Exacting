@@ -60,14 +60,13 @@ class ExactBlock: OnPlayerLoseBlockSubscriber, OnPlayerDamagedSubscriber, PreMon
     }
 
     override fun receiveOnPlayerDamaged(damageAmount: Int, damageInfo: DamageInfo?): Int {
-        logger.debug("player damaged")
         context = context.copy(damage = damageInfo)
         val damage = if(AbstractDungeon.player.hasPower("IntangiblePlayer")) 1 else damageAmount;
 
         if (damage == AbstractDungeon.player.currentBlock) {
             logger.debug("Exact damage")
             if (damageInfo?.owner is AbstractMonster)
-                stun(damageInfo.owner as AbstractMonster)
+                debuff(damageInfo.owner as AbstractMonster)
         }
 
         return damageAmount
@@ -76,15 +75,8 @@ class ExactBlock: OnPlayerLoseBlockSubscriber, OnPlayerDamagedSubscriber, PreMon
     override fun receiveOnPlayerLoseBlock(amount: Int): Int {
         // Do not fire if no damage is done
         // If the player is damaged by an opponent for the exact amount of the player's current block,
-        // stun the opponent
-        logger.debug("on player lose block")
+        // debuff the opponent
         val playerCurrentBlock = AbstractDungeon.player.currentBlock;
-        logger.debug("EXACT BLOCK: " +
-                "current monster name ${context.monster?.name}" +
-                "amount $amount, " +
-                "start of monster turn block ${context.startingPlayerBlock}, " +
-                "current damage output ${context.damage?.output}, " +
-                "current block $playerCurrentBlock");
         if (
             context.monster != null
             && context.startingPlayerBlock != 0
@@ -93,7 +85,7 @@ class ExactBlock: OnPlayerLoseBlockSubscriber, OnPlayerDamagedSubscriber, PreMon
         ) {
             val cm = context.monster
             if (cm != null)
-                stun(cm)
+                debuff(cm)
         }
 
         context = DamageContext()
@@ -101,8 +93,8 @@ class ExactBlock: OnPlayerLoseBlockSubscriber, OnPlayerDamagedSubscriber, PreMon
         return amount
     }
 
-    private fun stun(monster: AbstractMonster) {
-        logger.debug("stunning ${monster.name} [$context]")
+    private fun debuff(monster: AbstractMonster) {
+        logger.debug("debuffing ${monster.name} [$context]")
 
         AbstractDungeon.actionManager.addToBottom(
             ApplyPowerAction(

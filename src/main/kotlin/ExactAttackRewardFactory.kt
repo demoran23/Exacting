@@ -4,6 +4,7 @@ package exacting
 
 import com.megacrit.cardcrawl.actions.utility.TextAboveCreatureAction
 import com.megacrit.cardcrawl.actions.utility.TextCenteredAction
+import com.megacrit.cardcrawl.cards.CardGroup
 import com.megacrit.cardcrawl.core.CardCrawlGame
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon
 import com.megacrit.cardcrawl.monsters.AbstractMonster
@@ -17,7 +18,7 @@ import java.util.*
 class ExactAttackRewardFactory {
     companion object {
         val logger: Logger = LogManager.getLogger(ExactAttackRewardFactory::class.java.name);
-        val chance: (Int) -> Boolean = { chance -> Random().nextInt(100) < chance }
+        val chance: (Int) -> Boolean = { percentage -> Random().nextInt(100) < percentage }
     }
 
     fun getReward(monster: AbstractMonster) {
@@ -27,25 +28,76 @@ class ExactAttackRewardFactory {
             AbstractMonster.EnemyType.NORMAL -> when {
                 chance(2) -> awardMaxHp()
                 chance(2) -> awardRelic()
-                chance(5) -> awardCard()
+                chance(3) -> awardRemoveCard()
+                chance(3) -> awardTransformCard()
+                chance(3) -> awardUpgradeCard()
+                chance(5) -> awardGainCard()
                 chance(10) -> awardPotion()
+                chance(10) -> awardHeal()
                 else -> awardGold(15)
             }
             AbstractMonster.EnemyType.ELITE -> when {
                 chance(4) -> awardMaxHp()
                 chance(5) -> awardRelic()
-                chance(10) -> awardCard()
+                chance(6) -> awardRemoveCard()
+                chance(6) -> awardTransformCard()
+                chance(6) -> awardUpgradeCard()
+                chance(10) -> awardGainCard()
                 chance(30) -> awardPotion()
+                chance(30) -> awardHeal()
                 else -> awardGold(25)
             }
             AbstractMonster.EnemyType.BOSS -> when {
-                chance(5) -> awardCard() // Card rewards from bosses are always rare, so this is a real treat
+                chance(5) -> awardGainCard() // Card rewards from bosses are always rare, so this is a real treat
                 chance(10) -> awardMaxHp()
                 chance(10) -> awardRelic()
+                chance(10) -> awardRemoveCard()
+                chance(10) -> awardTransformCard()
+                chance(10) -> awardUpgradeCard()
                 chance(30) -> awardPotion()
+                chance(30) -> awardHeal()
                 else -> awardGold(45)
             }
         }
+    }
+
+    private fun awardRemoveCard() {
+        // AbstractDungeon.previousScreen = AbstractDungeon.CurrentScreen
+        AbstractDungeon.gridSelectScreen.open(
+            CardGroup.getGroupWithoutBottledCards(AbstractDungeon.player.masterDeck.purgeableCards),
+            1,
+            "Exact Attack reward: Remove a card",
+            false,
+            false,
+            true,
+            true
+        )
+    }
+
+    private fun awardUpgradeCard() {
+        // AbstractDungeon.previousScreen = AbstractDungeon.CurrentScreen
+        AbstractDungeon.gridSelectScreen.open(
+            CardGroup.getGroupWithoutBottledCards(AbstractDungeon.player.masterDeck.upgradableCards),
+            1,
+            "Exact Attack reward: Upgrade a card",
+            true,
+            false,
+            true,
+            false
+        )
+    }
+
+    private fun awardTransformCard() {
+        // AbstractDungeon.previousScreen = AbstractDungeon.CurrentScreen
+        AbstractDungeon.gridSelectScreen.open(
+            CardGroup.getGroupWithoutBottledCards(AbstractDungeon.player.masterDeck.purgeableCards),
+            1,
+            "Exact Attack reward: Transform a card",
+            false,
+            true,
+            true,
+            false
+        )
     }
 
     private fun awardGold(amount: Int) {
@@ -59,7 +111,7 @@ class ExactAttackRewardFactory {
         displayBonus("Gain ${amount} Gold")
     }
 
-    private fun awardCard() {
+    private fun awardGainCard() {
         AbstractDungeon.getCurrRoom().rewards.add(RewardItem(AbstractDungeon.player.cardColor))
 
         displayBonus("+1 Card Reward")
@@ -85,6 +137,13 @@ class ExactAttackRewardFactory {
         logger.debug("Giving max hp")
         AbstractDungeon.player.increaseMaxHp(2, true)
         displayBonus("2 Max HP")
+    }
+
+    private fun awardHeal() {
+        logger.debug("Giving heal")
+        var amount = (AbstractDungeon.player.maxHealth *.15).toInt();
+        AbstractDungeon.player.heal(amount, true)
+        displayBonus("Heal 15% of Max HP")
     }
 
     private fun displayBonus(description: String) {
