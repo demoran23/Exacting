@@ -2,9 +2,9 @@
 
 Exacting is a mod for Slay The Spire, inspired by the mechanics of NEOVERSE.
 
-Blocking an opponent's attack exactly will stun your opponent.
+Blocking an opponent's attack exactly will debuff your opponent.
 
-Taking an opponent to exactly 0 hp will yield a benefit.
+Taking an opponent to exactly 0 hp will yield a reward.
 
 # Building
 
