@@ -17,76 +17,38 @@ import java.util.*
 class ExactAttackRewardFactory {
     companion object {
         val logger: Logger = LogManager.getLogger(ExactAttackRewardFactory::class.java.name);
+        val chance: (Int) -> Boolean = { chance -> Random().nextInt(100) < chance }
     }
-
-    private data class RewardConfig(
-        val enemyType: AbstractMonster.EnemyType = AbstractMonster.EnemyType.NORMAL,
-        val gold: IntRange = 0..0,
-        val card: IntRange = 0..0,
-        val potion: IntRange = 0..0,
-        val relic: IntRange = 0..0,
-        val maxHp: IntRange = 0..0
-    )
 
     fun getReward(monster: AbstractMonster) {
-        logger.debug("Generating reward")
-        when (monster.type) {
-            AbstractMonster.EnemyType.NORMAL ->
-                return generateReward(
-                    RewardConfig(
-                        enemyType = monster.type,
-                        gold = 0..80,
-                        potion = 81..90,
-                        card = 91..95,
-                        relic = 96..97,
-                        maxHp = 98..100
-                    )
-                )
-            AbstractMonster.EnemyType.ELITE ->
-                return generateReward(
-                    RewardConfig(
-                        enemyType = monster.type,
-                        gold = 0..60,
-                        potion = 61..80,
-                        card = 81..90,
-                        relic = 91..95,
-                        maxHp = 96..100
-                    )
-                )
-            AbstractMonster.EnemyType.BOSS ->
-                return generateReward(
-                    RewardConfig(
-                        enemyType = monster.type,
-                        gold = 0..30,
-                        potion = 31..50,
-                        card = 51..60, // Card rewards from bosses are always rare, so this is a real treat
-                        relic = 61..80,
-                        maxHp = 81..100
-                    )
-                )
+        val monsterType = monster.type ?: return
+
+        when (monsterType) {
+            AbstractMonster.EnemyType.NORMAL -> when {
+                chance(2) -> awardMaxHp()
+                chance(2) -> awardRelic()
+                chance(5) -> awardCard()
+                chance(10) -> awardPotion()
+                else -> awardGold(15)
+            }
+            AbstractMonster.EnemyType.ELITE -> when {
+                chance(4) -> awardMaxHp()
+                chance(5) -> awardRelic()
+                chance(10) -> awardCard()
+                chance(30) -> awardPotion()
+                else -> awardGold(25)
+            }
+            AbstractMonster.EnemyType.BOSS -> when {
+                chance(5) -> awardCard() // Card rewards from bosses are always rare, so this is a real treat
+                chance(10) -> awardMaxHp()
+                chance(10) -> awardRelic()
+                chance(30) -> awardPotion()
+                else -> awardGold(45)
+            }
         }
     }
 
-    private fun generateReward(config: RewardConfig) {
-        val roll = Random().nextInt(101)
-        when {
-            config.gold.contains(roll) -> awardGold(config)
-            config.card.contains(roll) -> awardCard(config)
-            config.relic.contains(roll) -> awardRelic()
-            config.maxHp.contains(roll) -> awardMaxHp()
-            config.potion.contains(roll) -> awardPotion()
-        }
-    }
-
-    private fun awardGold(config: RewardConfig) {
-        logger.debug("Giving gold")
-
-        var amount = when (config.enemyType) {
-            AbstractMonster.EnemyType.NORMAL -> 15
-            AbstractMonster.EnemyType.ELITE -> 25
-            AbstractMonster.EnemyType.BOSS -> 40
-        }
-
+    private fun awardGold(amount: Int) {
         CardCrawlGame.sound.play("GOLD_GAIN")
         AbstractDungeon.player.gainGold(amount)
 
@@ -97,17 +59,13 @@ class ExactAttackRewardFactory {
         displayBonus("Gain ${amount} Gold")
     }
 
-    private fun awardCard(config: RewardConfig) {
-        logger.debug("Giving card")
-
+    private fun awardCard() {
         AbstractDungeon.getCurrRoom().rewards.add(RewardItem(AbstractDungeon.player.cardColor))
 
         displayBonus("+1 Card Reward")
     }
 
     private fun awardRelic() {
-        logger.debug("Giving relic")
-
         val relic = AbstractDungeon.returnRandomRelicEnd(rollRelicTier())
         AbstractDungeon.getCurrRoom().rewards.add(RewardItem(relic))
 
