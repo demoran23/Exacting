@@ -13,12 +13,10 @@ import com.megacrit.cardcrawl.shop.ShopScreen.rollRelicTier
 import com.megacrit.cardcrawl.vfx.GainPennyEffect
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import java.util.*
 
 class ExactAttackRewardFactory {
     companion object {
         val logger: Logger = LogManager.getLogger(ExactAttackRewardFactory::class.java.name);
-        val chance: (Int) -> Boolean = { percentage -> Random().nextInt(100) < percentage }
     }
 
     fun getReward(monster: AbstractMonster) {

@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger
 class StunPower(abstractMonster: AbstractMonster) : AbstractPower() {
 
     private var originalIntent: AbstractMonster.Intent;
-    private var applied: Boolean = false;
     private var originalNextMove: Byte;
     private var monster: AbstractMonster
     private var roundsApplied = 0;

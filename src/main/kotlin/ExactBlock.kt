@@ -97,32 +97,35 @@ class ExactBlock : OnPlayerLoseBlockSubscriber, OnPlayerDamagedSubscriber, PreMo
     private fun debuff(monster: AbstractMonster) {
         logger.debug("debuffing ${monster.name} [$context]")
 
-        AbstractDungeon.actionManager.addToBottom(
-            ApplyPowerAction(
-                monster,
-                AbstractDungeon.player,
-                StunPower(monster),
-                1
+        when {
+            chance(20) -> AbstractDungeon.actionManager.addToBottom(
+                ApplyPowerAction(
+                    monster,
+                    AbstractDungeon.player,
+                    StunPower(monster),
+                    1
+                )
             )
-        )
+            else -> {
+                AbstractDungeon.actionManager.addToBottom(
+                    ApplyPowerAction(
+                        monster,
+                        AbstractDungeon.player,
+                        WeakPower(monster, 1, true),
+                        1
+                    )
+                )
 
-        AbstractDungeon.actionManager.addToBottom(
-            ApplyPowerAction(
-                monster,
-                AbstractDungeon.player,
-                WeakPower(monster, 1, true),
-                1
-            )
-        )
-
-        AbstractDungeon.actionManager.addToBottom(
-            ApplyPowerAction(
-                monster,
-                AbstractDungeon.player,
-                VulnerablePower(monster, 1, true),
-                1
-            )
-        )
+                AbstractDungeon.actionManager.addToBottom(
+                    ApplyPowerAction(
+                        monster,
+                        AbstractDungeon.player,
+                        VulnerablePower(monster, 1, true),
+                        1
+                    )
+                )
+            }
+        }
 
         AbstractDungeon.actionManager.addToBottom(
             TextAboveCreatureAction(
