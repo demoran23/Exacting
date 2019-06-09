@@ -9,7 +9,7 @@ import basemod.interfaces.PostEnergyRechargeSubscriber
 import basemod.interfaces.PreMonsterTurnSubscriber
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer
 import com.megacrit.cardcrawl.actions.common.ApplyPowerAction
-import com.megacrit.cardcrawl.actions.utility.TextAboveCreatureAction
+import com.megacrit.cardcrawl.actions.utility.TextCenteredAction
 import com.megacrit.cardcrawl.cards.DamageInfo
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon
 import com.megacrit.cardcrawl.monsters.AbstractMonster
@@ -53,10 +53,6 @@ class ExactBlock : OnPlayerLoseBlockSubscriber, OnPlayerDamagedSubscriber, PreMo
         }
 
         @JvmStatic
-        fun main(args: Array<String>) {
-            println("Kotlin main is running here!")
-        }
-
         val logger: Logger = LogManager.getLogger(ExactBlock::class.java.name);
     }
 
@@ -65,7 +61,6 @@ class ExactBlock : OnPlayerLoseBlockSubscriber, OnPlayerDamagedSubscriber, PreMo
         val damage = if (AbstractDungeon.player.hasPower("IntangiblePlayer")) 1 else damageAmount;
 
         if (damage == AbstractDungeon.player.currentBlock) {
-            logger.debug("Exact block")
             if (damageInfo?.owner is AbstractMonster)
                 debuff(damageInfo.owner as AbstractMonster)
         }
@@ -74,7 +69,6 @@ class ExactBlock : OnPlayerLoseBlockSubscriber, OnPlayerDamagedSubscriber, PreMo
     }
 
     override fun receiveOnPlayerLoseBlock(amount: Int): Int {
-        // Do not fire if no damage is done
         // If the player is damaged by an opponent for the exact amount of the player's current block,
         // debuff the opponent
         val playerCurrentBlock = AbstractDungeon.player.currentBlock;
@@ -95,8 +89,7 @@ class ExactBlock : OnPlayerLoseBlockSubscriber, OnPlayerDamagedSubscriber, PreMo
     }
 
     private fun debuff(monster: AbstractMonster) {
-        logger.debug("debuffing ${monster.name} [$context]")
-
+        logger.info("Debuffing monster")
         when {
             chance(20) -> AbstractDungeon.actionManager.addToBottom(
                 ApplyPowerAction(
@@ -128,8 +121,8 @@ class ExactBlock : OnPlayerLoseBlockSubscriber, OnPlayerDamagedSubscriber, PreMo
         }
 
         AbstractDungeon.actionManager.addToBottom(
-            TextAboveCreatureAction(
-                monster,
+            TextCenteredAction(
+                AbstractDungeon.player,
                 "Exact Vengeance"
             )
         )

@@ -1,7 +1,6 @@
 package exacting
 
 import com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction
-import com.megacrit.cardcrawl.core.AbstractCreature
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon
 import com.megacrit.cardcrawl.monsters.AbstractMonster
 import com.megacrit.cardcrawl.powers.AbstractPower
@@ -37,20 +36,13 @@ class StunPower(abstractMonster: AbstractMonster) : AbstractPower() {
         this.originalNextMove = abstractMonster.nextMove
     }
 
-    override fun atEndOfTurn(isPlayer: Boolean) {
-        super.atEndOfTurn(isPlayer)
-        logger.debug("end of turn")
-    }
-
     override fun onInitialApplication() {
         super.onInitialApplication()
-        logger.debug("initial application")
         monster.setMove("Stunned", -1, AbstractMonster.Intent.STUN)
         monster.createIntent()
     }
 
     override fun atEndOfRound() {
-        logger.debug("end of round")
         if (roundsApplied++ == 1) {
             AbstractDungeon.actionManager.addToBottom(
                 RemoveSpecificPowerAction(

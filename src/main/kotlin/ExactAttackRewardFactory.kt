@@ -16,12 +16,12 @@ import org.apache.logging.log4j.Logger
 
 class ExactAttackRewardFactory {
     companion object {
+        @JvmStatic
         val logger: Logger = LogManager.getLogger(ExactAttackRewardFactory::class.java.name);
     }
 
     fun getReward(monster: AbstractMonster) {
         val monsterType = monster.type ?: return
-
         when (monsterType) {
             AbstractMonster.EnemyType.NORMAL -> when {
                 chance(2) -> awardMaxHp()
@@ -123,8 +123,6 @@ class ExactAttackRewardFactory {
     }
 
     private fun awardPotion() {
-        logger.debug("Giving potion")
-
         val potion = AbstractDungeon.returnRandomPotion();
         AbstractDungeon.getCurrRoom().rewards.add(RewardItem(potion))
 
@@ -132,19 +130,20 @@ class ExactAttackRewardFactory {
     }
 
     private fun awardMaxHp() {
-        logger.debug("Giving max hp")
         AbstractDungeon.player.increaseMaxHp(2, true)
+
         displayBonus("2 Max HP")
     }
 
     private fun awardHeal() {
-        logger.debug("Giving heal")
-        var amount = (AbstractDungeon.player.maxHealth *.15).toInt();
+        var amount = (AbstractDungeon.player.maxHealth * .15).toInt();
         AbstractDungeon.player.heal(amount, true)
         displayBonus("Heal 15% of Max HP")
     }
 
     private fun displayBonus(description: String) {
+        logger.info("Granting reward: $description")
+
         AbstractDungeon.actionManager.addToBottom(
             TextCenteredAction(
                 AbstractDungeon.player,

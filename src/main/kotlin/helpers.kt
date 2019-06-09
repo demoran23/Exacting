@@ -2,4 +2,8 @@ package exacting
 
 import java.util.*
 
-val chance: (Int) -> Boolean = { percentage -> Random().nextInt(100) < percentage }
+private val random = Random()
+
+fun chance(percentage: Int): Boolean {
+    return random.nextInt(100) < percentage
+}
