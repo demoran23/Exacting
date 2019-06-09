@@ -18,13 +18,14 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
 @SpireInitializer
-class ExactBlock: OnPlayerLoseBlockSubscriber, OnPlayerDamagedSubscriber, PreMonsterTurnSubscriber, PostEnergyRechargeSubscriber {
-    private data class DamageContext (
+class ExactBlock : OnPlayerLoseBlockSubscriber, OnPlayerDamagedSubscriber, PreMonsterTurnSubscriber,
+    PostEnergyRechargeSubscriber {
+    private data class DamageContext(
         val monster: AbstractMonster? = null,
         val startingPlayerBlock: Int = 0,
         val startingPlayerHealth: Int = 0,
         val damage: DamageInfo? = null
-        )
+    )
 
     private var context: DamageContext = DamageContext()
 
@@ -61,10 +62,10 @@ class ExactBlock: OnPlayerLoseBlockSubscriber, OnPlayerDamagedSubscriber, PreMon
 
     override fun receiveOnPlayerDamaged(damageAmount: Int, damageInfo: DamageInfo?): Int {
         context = context.copy(damage = damageInfo)
-        val damage = if(AbstractDungeon.player.hasPower("IntangiblePlayer")) 1 else damageAmount;
+        val damage = if (AbstractDungeon.player.hasPower("IntangiblePlayer")) 1 else damageAmount;
 
         if (damage == AbstractDungeon.player.currentBlock) {
-            logger.debug("Exact damage")
+            logger.debug("Exact block")
             if (damageInfo?.owner is AbstractMonster)
                 debuff(damageInfo.owner as AbstractMonster)
         }
@@ -95,6 +96,15 @@ class ExactBlock: OnPlayerLoseBlockSubscriber, OnPlayerDamagedSubscriber, PreMon
 
     private fun debuff(monster: AbstractMonster) {
         logger.debug("debuffing ${monster.name} [$context]")
+
+        AbstractDungeon.actionManager.addToBottom(
+            ApplyPowerAction(
+                monster,
+                AbstractDungeon.player,
+                StunPower(monster),
+                1
+            )
+        )
 
         AbstractDungeon.actionManager.addToBottom(
             ApplyPowerAction(
