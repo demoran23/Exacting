@@ -4,13 +4,17 @@ package exacting
 
 import com.megacrit.cardcrawl.actions.utility.TextAboveCreatureAction
 import com.megacrit.cardcrawl.actions.utility.TextCenteredAction
+import com.megacrit.cardcrawl.cards.AbstractCard
 import com.megacrit.cardcrawl.cards.CardGroup
 import com.megacrit.cardcrawl.core.CardCrawlGame
+import com.megacrit.cardcrawl.core.Settings
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon
 import com.megacrit.cardcrawl.monsters.AbstractMonster
 import com.megacrit.cardcrawl.rewards.RewardItem
 import com.megacrit.cardcrawl.shop.ShopScreen.rollRelicTier
 import com.megacrit.cardcrawl.vfx.GainPennyEffect
+import com.megacrit.cardcrawl.vfx.UpgradeShineEffect
+import com.megacrit.cardcrawl.vfx.cardManip.ShowCardBrieflyEffect
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
@@ -26,9 +30,9 @@ class ExactAttackRewardFactory {
             AbstractMonster.EnemyType.NORMAL -> when {
                 chance(2) -> awardMaxHp()
                 chance(2) -> awardRelic()
-                chance(3) -> awardRemoveCard()
-                chance(3) -> awardTransformCard()
-                chance(3) -> awardUpgradeCard()
+//                chance(3) -> awardRemoveCard()
+//                chance(3) -> awardTransformCard()
+//                chance(3) -> awardUpgradeCard()
                 chance(5) -> awardGainCard()
                 chance(10) -> awardPotion()
                 chance(10) -> awardHeal()
@@ -37,9 +41,9 @@ class ExactAttackRewardFactory {
             AbstractMonster.EnemyType.ELITE -> when {
                 chance(4) -> awardMaxHp()
                 chance(5) -> awardRelic()
-                chance(6) -> awardRemoveCard()
-                chance(6) -> awardTransformCard()
-                chance(6) -> awardUpgradeCard()
+//                chance(6) -> awardRemoveCard()
+//                chance(6) -> awardTransformCard()
+//                chance(6) -> awardUpgradeCard()
                 chance(10) -> awardGainCard()
                 chance(30) -> awardPotion()
                 chance(30) -> awardHeal()
@@ -49,9 +53,9 @@ class ExactAttackRewardFactory {
                 chance(5) -> awardGainCard() // Card rewards from bosses are always rare, so this is a real treat
                 chance(10) -> awardMaxHp()
                 chance(10) -> awardRelic()
-                chance(10) -> awardRemoveCard()
-                chance(10) -> awardTransformCard()
-                chance(10) -> awardUpgradeCard()
+//                chance(10) -> awardRemoveCard()
+//                chance(10) -> awardTransformCard()
+//                chance(10) -> awardUpgradeCard()
                 chance(30) -> awardPotion()
                 chance(30) -> awardHeal()
                 else -> awardGold(45)
@@ -60,7 +64,6 @@ class ExactAttackRewardFactory {
     }
 
     private fun awardRemoveCard() {
-        // AbstractDungeon.previousScreen = AbstractDungeon.CurrentScreen
         AbstractDungeon.gridSelectScreen.open(
             CardGroup.getGroupWithoutBottledCards(AbstractDungeon.player.masterDeck.purgeableCards),
             1,
@@ -73,7 +76,6 @@ class ExactAttackRewardFactory {
     }
 
     private fun awardUpgradeCard() {
-        // AbstractDungeon.previousScreen = AbstractDungeon.CurrentScreen
         AbstractDungeon.gridSelectScreen.open(
             CardGroup.getGroupWithoutBottledCards(AbstractDungeon.player.masterDeck.upgradableCards),
             1,
@@ -83,10 +85,16 @@ class ExactAttackRewardFactory {
             true,
             false
         )
+
+        AbstractDungeon.gridSelectScreen.selectedCards.forEach {
+            logger.debug("upgrading ${it.name}")
+            it.upgrade()
+        }
+        AbstractDungeon.gridSelectScreen.selectedCards.clear();
+
     }
 
     private fun awardTransformCard() {
-        // AbstractDungeon.previousScreen = AbstractDungeon.CurrentScreen
         AbstractDungeon.gridSelectScreen.open(
             CardGroup.getGroupWithoutBottledCards(AbstractDungeon.player.masterDeck.purgeableCards),
             1,
