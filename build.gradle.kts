@@ -45,7 +45,9 @@ tasks.register<Jar>("jar1") {
         attributes["Main-Class"] = "exacting.ExactBlocking"
     }
     from({
-        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+        configurations.runtimeClasspath.get()
+            .filter { it.name.endsWith("jar") }
+            .map { zipTree(it) }
     })
     from(file("src/ModTheSpire.json"))
 }
@@ -60,4 +62,16 @@ tasks.register<Copy>("copyJarToStsMods") {
 
     from("build/libs/Exacting.jar")
     into("$slayTheSpireInstallDir\\mods")
+}
+
+tasks.register<Copy>("copyJarToWorkshopFolder") {
+    dependsOn("clean")
+    dependsOn("jar1")
+
+    if (slayTheSpireInstallDir == null || slayTheSpireInstallDir == "null") {
+        throw Exception("STS_HOME is not set.")
+    }
+
+    from("build/libs/Exacting.jar")
+    into("$slayTheSpireInstallDir\\Exacting\\content") // publish to Workshop folder
 }

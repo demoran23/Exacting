@@ -4,7 +4,6 @@ import com.evacipated.cardcrawl.modthespire.lib.*;
 import com.evacipated.cardcrawl.modthespire.patcher.PatchingException;
 import com.megacrit.cardcrawl.cards.DamageInfo;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
-import com.megacrit.cardcrawl.core.AbstractCreature;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 import javassist.CannotCompileException;;
 import javassist.CtBehavior;
@@ -16,8 +15,8 @@ import org.apache.logging.log4j.Logger;
         method = "damage",
         paramtypez = {DamageInfo.class}
 )
-public class ExactAttack {
-    private static final Logger logger = LogManager.getLogger(AbstractCreature.class.getName());
+public class ExactAttackMonsterKill {
+    private static final Logger logger = LogManager.getLogger(ExactAttackMonsterKill.class.getName());
 
     @SpireInsertPatch(
             locator = Locator.class,
@@ -28,7 +27,7 @@ public class ExactAttack {
         // If the player has damaged the monster for exactly its full health, reward the player
         // Powers like Immolate apply the DamageAllEnemiesAction, which nulls out the owner
         if ((info.owner == null || info.owner instanceof AbstractPlayer) && damageAmount[0] == __instance.currentHealth) {
-            new ExactAttackRewardFactory().getReward(__instance);
+            new ExactAttack().getReward(__instance);
         }
     }
 

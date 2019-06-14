@@ -1,33 +1,53 @@
-@file:JvmName("ExactAttackRewardFactory")
+@file:JvmName("ExactAttack")
 
 package exacting
 
 import com.megacrit.cardcrawl.actions.utility.TextAboveCreatureAction
 import com.megacrit.cardcrawl.actions.utility.TextCenteredAction
-import com.megacrit.cardcrawl.cards.AbstractCard
 import com.megacrit.cardcrawl.cards.CardGroup
-import com.megacrit.cardcrawl.core.CardCrawlGame
-import com.megacrit.cardcrawl.core.Settings
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon
+import com.megacrit.cardcrawl.core.CardCrawlGame.*
 import com.megacrit.cardcrawl.monsters.AbstractMonster
+import com.megacrit.cardcrawl.monsters.AbstractMonster.EnemyType
+import com.megacrit.cardcrawl.powers.DexterityPower
+import com.megacrit.cardcrawl.powers.IntangiblePower
+import com.megacrit.cardcrawl.powers.StrengthPower
 import com.megacrit.cardcrawl.rewards.RewardItem
 import com.megacrit.cardcrawl.shop.ShopScreen.rollRelicTier
 import com.megacrit.cardcrawl.vfx.GainPennyEffect
-import com.megacrit.cardcrawl.vfx.UpgradeShineEffect
-import com.megacrit.cardcrawl.vfx.cardManip.ShowCardBrieflyEffect
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon.*
 
-class ExactAttackRewardFactory {
+class ExactAttack {
     companion object {
         @JvmStatic
-        val logger: Logger = LogManager.getLogger(ExactAttackRewardFactory::class.java.name);
+        val logger: Logger = LogManager.getLogger(ExactAttack::class.java.name);
+    }
+
+    fun buffMonster(monster: AbstractMonster) {
+        logger.debug("Buffing monster")
+
+        when {
+            chance(3) -> monster.applyPower(IntangiblePower(monster, 1))
+            chance(7) -> monster.heal((monster.maxHealth * .2).toInt())
+            chance(10) -> monster.currentBlock += 10
+            chance(20) -> monster.applyPower(StrengthPower(monster, 1))
+            chance(20) -> monster.applyPower(DexterityPower(monster, 1))
+            else -> logger.debug("Phew!")
+        }
+
+        TextCenteredAction(player, "Exacting Mishap").push()
     }
 
     fun getReward(monster: AbstractMonster) {
         val monsterType = monster.type ?: return
+
+        // No rewards for minions
+        if (monster.isMinion())
+            return
+
         when (monsterType) {
-            AbstractMonster.EnemyType.NORMAL -> when {
+            EnemyType.NORMAL -> when {
                 chance(2) -> awardMaxHp()
                 chance(2) -> awardRelic()
 //                chance(3) -> awardRemoveCard()
@@ -36,9 +56,10 @@ class ExactAttackRewardFactory {
                 chance(5) -> awardGainCard()
                 chance(10) -> awardPotion()
                 chance(10) -> awardHeal()
+                chance(10) -> awardEnergy()
                 else -> awardGold(15)
             }
-            AbstractMonster.EnemyType.ELITE -> when {
+            EnemyType.ELITE -> when {
                 chance(4) -> awardMaxHp()
                 chance(5) -> awardRelic()
 //                chance(6) -> awardRemoveCard()
@@ -47,9 +68,10 @@ class ExactAttackRewardFactory {
                 chance(10) -> awardGainCard()
                 chance(30) -> awardPotion()
                 chance(30) -> awardHeal()
-                else -> awardGold(25)
+                chance(10) -> awardEnergy(2)
+                else -> awardGold(20)
             }
-            AbstractMonster.EnemyType.BOSS -> when {
+            EnemyType.BOSS -> when {
                 chance(5) -> awardGainCard() // Card rewards from bosses are always rare, so this is a real treat
                 chance(10) -> awardMaxHp()
                 chance(10) -> awardRelic()
@@ -64,8 +86,8 @@ class ExactAttackRewardFactory {
     }
 
     private fun awardRemoveCard() {
-        AbstractDungeon.gridSelectScreen.open(
-            CardGroup.getGroupWithoutBottledCards(AbstractDungeon.player.masterDeck.purgeableCards),
+        gridSelectScreen.open(
+            CardGroup.getGroupWithoutBottledCards(player.masterDeck.purgeableCards),
             1,
             "Exact Attack reward: Remove a card",
             false,
@@ -76,8 +98,8 @@ class ExactAttackRewardFactory {
     }
 
     private fun awardUpgradeCard() {
-        AbstractDungeon.gridSelectScreen.open(
-            CardGroup.getGroupWithoutBottledCards(AbstractDungeon.player.masterDeck.upgradableCards),
+        gridSelectScreen.open(
+            CardGroup.getGroupWithoutBottledCards(player.masterDeck.upgradableCards),
             1,
             "Exact Attack reward: Upgrade a card",
             true,
@@ -86,17 +108,24 @@ class ExactAttackRewardFactory {
             false
         )
 
-        AbstractDungeon.gridSelectScreen.selectedCards.forEach {
+        gridSelectScreen.selectedCards.forEach {
             logger.debug("upgrading ${it.name}")
             it.upgrade()
         }
-        AbstractDungeon.gridSelectScreen.selectedCards.clear();
+        gridSelectScreen.selectedCards.clear();
 
+//        if (!AbstractDungeon.isScreenUp && !AbstractDungeon.gridSelectScreen.selectedCards.isEmpty()) {
+//            val c = AbstractDungeon.gridSelectScreen.selectedCards[0] as AbstractCard
+//            c.upgrade()
+//            AbstractDungeon.player.bottledCardUpgradeCheck(c)
+//            AbstractDungeon.effectsQueue.add(ShowCardBrieflyEffect(c.makeStatEquivalentCopy()))
+//            AbstractDungeon.gridSelectScreen.selectedCards.clear()
+//        }
     }
 
     private fun awardTransformCard() {
-        AbstractDungeon.gridSelectScreen.open(
-            CardGroup.getGroupWithoutBottledCards(AbstractDungeon.player.masterDeck.purgeableCards),
+        gridSelectScreen.open(
+            CardGroup.getGroupWithoutBottledCards(player.masterDeck.purgeableCards),
             1,
             "Exact Attack reward: Transform a card",
             false,
@@ -107,63 +136,57 @@ class ExactAttackRewardFactory {
     }
 
     private fun awardGold(amount: Int) {
-        CardCrawlGame.sound.play("GOLD_GAIN")
-        AbstractDungeon.player.gainGold(amount)
+        sound.play("GOLD_GAIN")
+        player.gainGold(amount)
 
         for (i in 1..amount) {
-            AbstractDungeon.effectList.add(GainPennyEffect(AbstractDungeon.player.hb.cX, AbstractDungeon.player.hb.cY))
+            effectList.add(GainPennyEffect(player.hb.cX, player.hb.cY))
         }
 
         displayBonus("Gain ${amount} Gold")
     }
 
     private fun awardGainCard() {
-        AbstractDungeon.getCurrRoom().rewards.add(RewardItem(AbstractDungeon.player.cardColor))
+        getCurrRoom().rewards.add(RewardItem(player.cardColor))
 
         displayBonus("+1 Card Reward")
     }
 
     private fun awardRelic() {
-        val relic = AbstractDungeon.returnRandomRelicEnd(rollRelicTier())
-        AbstractDungeon.getCurrRoom().rewards.add(RewardItem(relic))
+        val relic = returnRandomRelicEnd(rollRelicTier())
+        getCurrRoom().rewards.add(RewardItem(relic))
 
         displayBonus("+1 Relic Reward")
     }
 
     private fun awardPotion() {
-        val potion = AbstractDungeon.returnRandomPotion();
-        AbstractDungeon.getCurrRoom().rewards.add(RewardItem(potion))
+        val potion = returnRandomPotion();
+        getCurrRoom().rewards.add(RewardItem(potion))
 
         displayBonus("+1 Potion Reward")
     }
 
     private fun awardMaxHp() {
-        AbstractDungeon.player.increaseMaxHp(2, true)
+        player.increaseMaxHp(2, true)
 
         displayBonus("2 Max HP")
     }
 
     private fun awardHeal() {
-        var amount = (AbstractDungeon.player.maxHealth * .15).toInt();
-        AbstractDungeon.player.heal(amount, true)
+        var amount = (player.maxHealth * .15).toInt();
+        player.heal(amount, true)
         displayBonus("Heal 15% of Max HP")
+    }
+
+    private fun awardEnergy(amount: Int = 1) {
+        player.gainEnergy(1)
+        displayBonus("+$amount Energy")
     }
 
     private fun displayBonus(description: String) {
         logger.info("Granting reward: $description")
 
-        AbstractDungeon.actionManager.addToBottom(
-            TextCenteredAction(
-                AbstractDungeon.player,
-                "Exact Attack"
-            )
-        )
-
-        AbstractDungeon.actionManager.addToBottom(
-            TextAboveCreatureAction(
-                AbstractDungeon.player,
-                description
-            )
-        )
+        TextCenteredAction(player, "Exact Attack").push()
+        TextAboveCreatureAction(player, description).push()
     }
 }
