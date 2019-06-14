@@ -27,16 +27,31 @@ class ExactAttack {
     fun buffMonster(monster: AbstractMonster) {
         logger.debug("Buffing monster")
 
-        when {
-            chance(3) -> monster.applyPower(IntangiblePower(monster, 1))
-            chance(7) -> monster.heal((monster.maxHealth * .2).toInt())
-            chance(10) -> monster.currentBlock += 10
-            chance(20) -> monster.applyPower(StrengthPower(monster, 1))
-            chance(20) -> monster.applyPower(DexterityPower(monster, 1))
-            else -> logger.debug("Phew!")
-        }
-
         TextCenteredAction(player, "Exacting Mishap").push()
+
+        when {
+            chance(3) -> {
+                monster.applyPower(IntangiblePower(monster, 1))
+                TextAboveCreatureAction(monster, "+1 Intangible").push()
+            }
+            chance(7) -> {
+                val amount = (monster.maxHealth * .2).toInt()
+                monster.heal(amount)
+                TextAboveCreatureAction(monster, "+$amount Heal").push()
+            }
+            chance(10) -> {
+                monster.currentBlock += 10
+                TextAboveCreatureAction(monster, "+10 Block").push()
+            }
+            chance(20) -> {
+                monster.applyPower(StrengthPower(monster, 1))
+                TextAboveCreatureAction(monster, "+1 Strength").push()
+            }
+            else -> {
+                monster.applyPower(DexterityPower(monster, 1))
+                TextAboveCreatureAction(monster, "+1 Dexterity").push()
+            }
+        }
     }
 
     fun getReward(monster: AbstractMonster) {
