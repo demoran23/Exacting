@@ -47,6 +47,7 @@ class ExactBlock : OnPlayerDamagedSubscriber, PreMonsterTurnSubscriber, PostEner
         @JvmStatic
         fun initialize() {
             ExactBlock()
+            //ExactingConfiguration()
         }
 
         @JvmStatic
@@ -66,6 +67,9 @@ class ExactBlock : OnPlayerDamagedSubscriber, PreMonsterTurnSubscriber, PostEner
     }
 
     private fun debuff(monster: AbstractMonster) {
+        if (ExactingConfiguration.instance.disableExactBlockMonsterDebuffs)
+            return
+
         logger.info("Debuffing monster")
 
         when {

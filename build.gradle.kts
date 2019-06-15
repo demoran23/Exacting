@@ -25,6 +25,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("reflect"))
     compileClasspath(fileTree("lib"))
     compileClasspath(files("$slayTheSpireInstallDir\\desktop-1.0.jar"))
 }

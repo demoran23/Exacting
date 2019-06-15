@@ -23,10 +23,11 @@ public class ExactAttackMonsterKill {
             localvars = {"damageAmount"}
     )
     public static void InsertPre(AbstractMonster __instance, DamageInfo info, @ByRef int[] damageAmount) {
-
         // If the player has damaged the monster for exactly its full health, reward the player
         // Powers like Immolate apply the DamageAllEnemiesAction, which nulls out the owner
-        if ((info.owner == null || info.owner instanceof AbstractPlayer) && damageAmount[0] == __instance.currentHealth) {
+        if ( !ExactingConfiguration.instance.getDisableExactAttackMonsterKillRewards()
+                && (info.owner == null || info.owner instanceof AbstractPlayer)
+                && damageAmount[0] == __instance.currentHealth) {
             new ExactAttack().getReward(__instance);
         }
     }

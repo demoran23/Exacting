@@ -10,6 +10,7 @@ import com.megacrit.cardcrawl.powers.MinionPower
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.util.*
+import kotlin.reflect.KProperty
 
 private val random = Random()
 private val logger: Logger = LogManager.getLogger("helpers");
@@ -35,3 +36,7 @@ fun AbstractGameAction.push() {
     actionManager.addToBottom(this)
 }
 
+// cf https://stackoverflow.com/a/54219019/773673
+inline fun <reified T> KProperty<*>.getAnnotation(): T {
+    return this.annotations.find { it is T } as T
+}
