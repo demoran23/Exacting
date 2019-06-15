@@ -24,23 +24,29 @@ class ExactAttack {
         val logger: Logger = LogManager.getLogger(ExactAttack::class.java.name);
     }
 
+    fun monsterParry(monster: AbstractMonster) {
+        logger.info("Monster parry")
+        TextAboveCreatureAction(monster, "Parry").push()
+    }
+
     fun buffMonster(monster: AbstractMonster) {
         logger.debug("Buffing monster")
 
         TextCenteredAction(player, "Exacting Mishap").push()
 
         when {
-            chance(3) -> {
-                monster.applyPower(IntangiblePower(monster, 1))
-                TextAboveCreatureAction(monster, "+1 Intangible").push()
-            }
+// TODO: Intangible lasts too long, customize it to last a single round, like Stun
+//            chance(3) -> {
+//                monster.applyPower(IntangiblePower(monster, 1))
+//                TextAboveCreatureAction(monster, "+1 Intangible").push()
+//            }
             chance(7) -> {
                 val amount = (monster.maxHealth * .2).toInt()
                 monster.heal(amount)
                 TextAboveCreatureAction(monster, "+$amount Heal").push()
             }
             chance(10) -> {
-                monster.currentBlock += 10
+                monster.addBlock(10)
                 TextAboveCreatureAction(monster, "+10 Block").push()
             }
             chance(20) -> {

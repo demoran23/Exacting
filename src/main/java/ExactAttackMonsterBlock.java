@@ -20,12 +20,18 @@ public class ExactAttackMonsterBlock {
 
     @SpireInsertPatch(
             locator = ExactAttackMonsterBlock.Locator.class,
-            localvars = {"damageAmount"}
+            localvars = {"damageAmount", "intentDmg"}
     )
-    public static void InsertPre(AbstractMonster __instance, DamageInfo info, @ByRef int[] damageAmount) {
+    public static void InsertPre(AbstractMonster __instance, DamageInfo info, @ByRef int[] damageAmount, @ByRef int[] intentDmg) {
         // If the player has damaged the monster for exactly its remaining block, buff the monster
         if ((info.owner == null || info.owner instanceof AbstractPlayer) && damageAmount[0] == __instance.currentBlock) {
             new ExactAttack().buffMonster(__instance);
+        }
+
+        // If the player's attack matches the monster's intended attack, the monster will parry the player
+        if ((info.owner == null || info.owner instanceof AbstractPlayer) && damageAmount[0] == intentDmg[0]) {
+            new ExactAttack().monsterParry(__instance);
+            damageAmount[0] = 0; // TODO: Possible bug - when triggered via Thunderclap, this appears to zero out damage for everyone in room.  Requires verification.
         }
     }
 
