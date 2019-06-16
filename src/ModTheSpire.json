@@ -3,6 +3,6 @@
   "name": "Exacting",
   "version": "0.3.0",
   "author_list": ["Adam Skinner"],
-  "description": "Exacting rewards you for precision. \n\nBlocking an attack exactly will debuff your opponent.\nReducing an non-minion opponent to exactly zero hp will yield a reward.\nBreaking an opponent's block exactly may buff your opponent.\n\nInspired by the mechanics of NEOVERSE.",
+  "description": "Exacting adds a few rules centered around making exact blocks and exact attacks.  They may be individually disabled via Mods > Exacting > Config.",
   "dependencies": ["basemod"]
 }

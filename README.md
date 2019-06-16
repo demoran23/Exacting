@@ -1,10 +1,13 @@
 # Exacting
 
-Exacting is a mod for Slay The Spire, inspired by the mechanics of NEOVERSE.
+Exacting is a mod for Slay The Spire, inspired by the mechanics of [NEOVERSE](https://store.steampowered.com/app/994220/NEOVERSE/).
 
 If your block exactly matches an opponent's attack damage, they will receive a debuff.
+
 If your attack damage brings a non-minion opponent to exactly zero hp, you will gain a reward.
+
 If your attack damage matches an opponent's defense exactly, they will receive a buff.
+
 If your attack damage matches an opponent's attack exactly, they parry your attack.
 
 # Rules
