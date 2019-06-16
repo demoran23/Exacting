@@ -5,7 +5,7 @@ import kotlin.reflect.KProperty
 
 class SpireConfigBooleanDelegate {
     companion object {
-        val spireConfig = SpireConfig("exacting", "exacting.config")
+        private val spireConfig = SpireConfig("exacting", "exacting.config")
     }
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): kotlin.Boolean {

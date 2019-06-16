@@ -2,17 +2,19 @@
 
 package exacting
 
-import basemod.interfaces.PostInitializeSubscriber
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
-import basemod.BaseMod.*
-import com.megacrit.cardcrawl.helpers.FontHelper
+import basemod.BaseMod.registerModBadge
+import basemod.BaseMod.subscribe
 import basemod.ModLabeledToggleButton
 import basemod.ModPanel
+import basemod.interfaces.PostInitializeSubscriber
 import com.badlogic.gdx.graphics.Texture
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer
 import com.megacrit.cardcrawl.core.Settings
+import com.megacrit.cardcrawl.helpers.FontHelper
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import kotlin.reflect.KMutableProperty
+
 
 @SpireInitializer
 class ExactingConfiguration : PostInitializeSubscriber {
@@ -34,20 +36,19 @@ class ExactingConfiguration : PostInitializeSubscriber {
     }
 
     @ConfigKey("disableExactBlockMonsterDebuffs", "Disable Exact Block Monster Debuffs")
-    var disableExactBlockMonsterDebuffs: Boolean by booleanDelegate
+    var disableExactBlockMonsterDebuffs by booleanDelegate
 
     @ConfigKey("disableExactAttackMonsterKillRewards", "Disable Exact Attack Monster Kill Rewards")
-    var disableExactAttackMonsterKillRewards: Boolean by booleanDelegate
+    var disableExactAttackMonsterKillRewards by booleanDelegate
 
     @ConfigKey("disableExactAttackMonsterBlockBuffs", "Disable Exact Attack Monster Block Buffs")
-    var disableExactAttackMonsterBlockBuffs: Boolean by booleanDelegate
+    var disableExactAttackMonsterBlockBuffs by booleanDelegate
 
     @ConfigKey("disableExactAttackMonsterParry", "Disable Exact Attack Monster Parry")
-    var disableExactAttackMonsterParry: Boolean by booleanDelegate
+    var disableExactAttackMonsterParry by booleanDelegate
 
     // Set up the configuration UI
     override fun receivePostInitialize() {
-        val instance = this
         val badgeTexture = Texture("images/BaseModBadge.png")
         val settingsPanel = ModPanel().apply {
             val xPos = 350f
@@ -66,8 +67,8 @@ class ExactingConfiguration : PostInitializeSubscriber {
                     FontHelper.charDescFont,
                     enabledProp.getter.call(),
                     this,
-                    { logger.debug("label updated: ${it.text}") },
-                    { enabledProp.setter.call(instance, it.enabled) }
+                    { },
+                    { enabledProp.setter.call(it.enabled) }
                 ))
             }
 
