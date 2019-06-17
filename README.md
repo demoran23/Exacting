@@ -56,3 +56,8 @@ In IntelliJ IDEA, you can create a run configuration and pin the variable to it.
 # Pulling
 
 The jars in the `lib` folder are stored in LFS, so you'll need to have that installed.  If you don't, the files will be there after pull, but they'll be like 1kb.
+
+# Third Party Mod Integration
+## Attack Kills Monster Exactly Rewards
+
+You can hook into `ExactAttack.monsterKillRewards` simply by adding a new Reward.  Rewards are evaluated in `sortOrder` precedence, and the first one to provide a reward wins. 
