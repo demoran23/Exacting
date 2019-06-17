@@ -9,9 +9,10 @@ import basemod.interfaces.PreMonsterTurnSubscriber
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer
 import com.megacrit.cardcrawl.actions.utility.TextCenteredAction
 import com.megacrit.cardcrawl.cards.DamageInfo
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon.*
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon.player
 import com.megacrit.cardcrawl.monsters.AbstractMonster
-import com.megacrit.cardcrawl.powers.*
+import com.megacrit.cardcrawl.powers.VulnerablePower
+import com.megacrit.cardcrawl.powers.WeakPower
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
@@ -47,7 +48,6 @@ class ExactBlock : OnPlayerDamagedSubscriber, PreMonsterTurnSubscriber, PostEner
         @JvmStatic
         fun initialize() {
             ExactBlock()
-            //ExactingConfiguration()
         }
 
         @JvmStatic

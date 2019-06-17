@@ -5,6 +5,7 @@ import com.evacipated.cardcrawl.modthespire.patcher.PatchingException;
 import com.megacrit.cardcrawl.cards.DamageInfo;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
+import com.megacrit.cardcrawl.monsters.EnemyMoveInfo;
 import javassist.CannotCompileException;
 import javassist.CtBehavior;
 import org.apache.logging.log4j.LogManager;
@@ -20,9 +21,9 @@ public class ExactAttackMonsterBlock {
 
     @SpireInsertPatch(
             locator = ExactAttackMonsterBlock.Locator.class,
-            localvars = {"damageAmount", "intentDmg"}
+            localvars = {"damageAmount", "intentDmg", "move"}
     )
-    public static void InsertPre(AbstractMonster __instance, DamageInfo info, @ByRef int[] damageAmount, @ByRef int[] intentDmg) {
+    public static void InsertPre(AbstractMonster __instance, DamageInfo info, @ByRef int[] damageAmount, @ByRef int[] intentDmg, EnemyMoveInfo move) {
         // If the player has damaged the monster for exactly its remaining block, buff the monster
         if (!ExactingConfiguration.instance.getDisableExactAttackMonsterBlockBuffs()
                 && (info.owner == null || info.owner instanceof AbstractPlayer)
@@ -33,6 +34,7 @@ public class ExactAttackMonsterBlock {
         // If the player's attack matches the monster's intended attack, the monster will parry the player
         if (!ExactingConfiguration.instance.getDisableExactAttackMonsterParry()
                 && (info.owner == null || info.owner instanceof AbstractPlayer)
+                && move.intent.toString().contains("ATTACK") // intentDmg not zeroed out if move intent is not attack
                 && damageAmount[0] == intentDmg[0]) {
             new ExactAttack().monsterParry(__instance);
             damageAmount[0] = 0; // TODO: Possible bug - when triggered via Thunderclap, this appears to zero out damage for everyone in room.  Requires verification.
