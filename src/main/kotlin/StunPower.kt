@@ -2,6 +2,7 @@ package exacting
 
 import com.megacrit.cardcrawl.actions.common.RemoveSpecificPowerAction
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon
+import com.megacrit.cardcrawl.helpers.ImageMaster
 import com.megacrit.cardcrawl.monsters.AbstractMonster
 import com.megacrit.cardcrawl.powers.AbstractPower
 import org.apache.logging.log4j.LogManager
@@ -18,20 +19,19 @@ class StunPower(abstractMonster: AbstractMonster) : AbstractPower() {
         @JvmStatic
         val logger: Logger = LogManager.getLogger(StunPower::class.java.name);
         @JvmStatic
-        val UniqueIdentifier = "Stun"
+        val UniqueIdentifier = "exacting:Stun"
     }
 
     init {
         this.type = PowerType.BUFF; // Bypass Artifact
         this.isTurnBased = true
-        this.isHovered = false
         this.owner = abstractMonster
         this.monster = abstractMonster
-        this.name = UniqueIdentifier
+        this.name = "Stun"
         this.ID = UniqueIdentifier
         this.description = "This creature is stunned and will not act."
         this.updateDescription()
-        this.loadRegion("vulnerable")
+        img = ImageMaster.loadImage("images/stun.png");
         this.originalIntent = abstractMonster.intent
         this.originalNextMove = abstractMonster.nextMove
     }

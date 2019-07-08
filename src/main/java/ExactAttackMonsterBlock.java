@@ -36,8 +36,7 @@ public class ExactAttackMonsterBlock {
                 && (info.owner == null || info.owner instanceof AbstractPlayer)
                 && move.intent.toString().contains("ATTACK") // intentDmg not zeroed out if move intent is not attack
                 && damageAmount[0] == intentDmg[0]) {
-            new ExactAttack().monsterParry(__instance);
-            damageAmount[0] = 0; // TODO: Possible bug - when triggered via Thunderclap, this appears to zero out damage for everyone in room.  Requires verification.
+            new ExactAttack().monsterRiposte(__instance, damageAmount[0]);
         }
     }
 

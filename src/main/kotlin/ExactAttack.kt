@@ -2,9 +2,12 @@
 
 package exacting
 
+import com.megacrit.cardcrawl.actions.AbstractGameAction
+import com.megacrit.cardcrawl.actions.common.DamageAction
 import com.megacrit.cardcrawl.actions.utility.TextAboveCreatureAction
 import com.megacrit.cardcrawl.actions.utility.TextCenteredAction
 import com.megacrit.cardcrawl.cards.CardGroup
+import com.megacrit.cardcrawl.cards.DamageInfo
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon.gridSelectScreen
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon.player
 import com.megacrit.cardcrawl.monsters.AbstractMonster
@@ -28,9 +31,16 @@ class ExactAttack {
         )
     }
 
-    fun monsterParry(monster: AbstractMonster) {
-        logger.info("Monster parry")
-        TextAboveCreatureAction(monster, "Parry").push()
+    fun monsterRiposte(monster: AbstractMonster, amount: Int) {
+        logger.info("Monster riposte")
+
+        DamageAction(
+            player,
+            DamageInfo(monster, amount),
+            AbstractGameAction.AttackEffect.SLASH_DIAGONAL
+        ).push()
+
+        TextAboveCreatureAction(monster, "Riposte").push()
     }
 
     fun buffMonster(monster: AbstractMonster) {
@@ -69,15 +79,17 @@ class ExactAttack {
         if (monster.isMinion())
             return
 
+        Reward.monster = monster
+
         for (reward in monsterKillRewards
-            .filter { it.predicate(monster) }
-            .sortedBy { it.sortOrder(monster) }
+            .filter { it.predicate() }
+            .sortedBy { it.sortOrder }
         ) {
             logger.debug("Checking reward: ${reward::class.java.name}")
 
             // Gold is the default reward, being last checked with a chance of 100%
-            if (chance(reward.chance(monster))) {
-                reward.effect(monster)
+            if (chance(reward.chance)) {
+                reward.effect()
                 return
             }
         }

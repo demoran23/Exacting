@@ -13,18 +13,24 @@ abstract class Reward {
     companion object {
         @JvmStatic
         val logger: Logger = LogManager.getLogger(Reward::class.java.name)
-    }
-    abstract fun sortOrder(monster: AbstractMonster): Int
-    abstract fun chance(monster: AbstractMonster): Int
-    protected abstract fun description(monster: AbstractMonster): String
-    abstract fun effect(monster: AbstractMonster)
 
-    open fun predicate(monster: AbstractMonster): Boolean {
+        /**
+         *  Set by [ExactAttack.getReward]
+         */
+        @JvmStatic
+        lateinit var monster: AbstractMonster
+    }
+
+    abstract val sortOrder: Int
+    abstract val chance: Int
+    protected abstract val description: String
+    abstract fun effect()
+
+    open fun predicate(): Boolean {
         return true
     }
 
-    protected fun displayBonus(monster: AbstractMonster) {
-        val description = description(monster)
+    protected fun displayBonus() {
         logger.info("Granting reward: $description")
 
         TextCenteredAction(player, "Exact Attack").push()

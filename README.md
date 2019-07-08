@@ -47,6 +47,9 @@ If your attack damage matches an opponent's defense exactly, they will receive o
 * Strength
 * Dexterity
 
+### Attack Equals Attack
+If your attack damage matches an opponents intended attack damage, they will immediately attack you back in equal measure.
+
 # Building
 
 run `./gradlew copyJarToStsMods` to build.  This requires an environment variable `STS_HOME` to be set, which is your install directory for Slay The Spire.

@@ -44,7 +44,7 @@ class ExactingConfiguration : PostInitializeSubscriber {
     @ConfigKey("disableExactAttackMonsterBlockBuffs", "Disable Exact Attack Monster Block Buffs")
     var disableExactAttackMonsterBlockBuffs by booleanDelegate
 
-    @ConfigKey("disableExactAttackMonsterParry", "Disable Exact Attack Monster Parry")
+    @ConfigKey("disableExactAttackMonsterParry", "Disable Exact Attack Monster Riposte")
     var disableExactAttackMonsterParry by booleanDelegate
 
     // Set up the configuration UI

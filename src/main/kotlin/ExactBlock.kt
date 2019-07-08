@@ -73,7 +73,7 @@ class ExactBlock : OnPlayerDamagedSubscriber, PreMonsterTurnSubscriber, PostEner
         logger.info("Debuffing monster")
 
         when {
-            chance(20) -> monster.applyPower(StunPower(monster))
+            chance(100) -> monster.applyPower(StunPower(monster))
             chance(40) -> monster.applyPower(WeakPower(monster, 1, true))
             chance(40) -> monster.applyPower(VulnerablePower(monster, 1, true))
             else -> {
